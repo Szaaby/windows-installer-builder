@@ -1,0 +1,61 @@
+name: Fordítás és tesztek
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: C# tesztek
+        run: dotnet test tests/InstallerBuilder.Core.Tests -c Release
+
+      - name: Telepítő szkript teszt (Windows PowerShell 5.1 – ez van egy friss Windowson)
+        shell: powershell
+        run: ./tests/Install-Programs.Tests.ps1
+
+      - name: Telepítő szkript teszt (PowerShell 7)
+        shell: pwsh
+        run: ./tests/Install-Programs.Tests.ps1
+
+      - name: A telepítéskori ablakok tesztje (programválasztó + folyamat)
+        shell: powershell
+        run: ./tests/Install-Programs.GuiTests.ps1
+
+      - name: Program fordítása (egyetlen .exe)
+        run: >
+          dotnet publish src/InstallerBuilder.App -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true
+          -o publish
+
+      - name: Önteszt (a teljes felület felépítése egy mintaprofillal)
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath publish/WindowsTelepitoKeszito.exe -ArgumentList '--selftest' -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Az önteszt sikertelen (kód: $($p.ExitCode))" }
+          Write-Host 'Önteszt rendben.'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WindowsTelepitoKeszito
+          path: publish/WindowsTelepitoKeszito.exe
+
+      - name: Kiadás (csak verzió-címkénél, pl. v1.0.0)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: publish/WindowsTelepitoKeszito.exe
+          generate_release_notes: true

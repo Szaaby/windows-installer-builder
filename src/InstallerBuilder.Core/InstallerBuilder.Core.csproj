@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>InstallerBuilder.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- A telepítés közben futó szkript: az adathordozóra kerül (lásd MediaPlanner). -->
+    <EmbeddedResource Include="Resources\Install-Programs.ps1" LogicalName="Install-Programs.ps1" />
+    <EmbeddedResource Include="Resources\Programok-telepitese.cmd" LogicalName="Programok-telepitese.cmd" />
+    <EmbeddedResource Include="Resources\Specialize.ps1" LogicalName="Specialize.ps1" />
+  </ItemGroup>
+
+</Project>

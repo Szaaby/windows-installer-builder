@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>WindowsTelepitoKeszito</AssemblyName>
+    <RootNamespace>InstallerBuilder.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <Product>Windows Telepítő Készítő</Product>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <!-- Windowson (a valódi fordítás, CI) a rendes WinForms projekt. -->
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <!-- Máshol (Linuxos fejlesztői gép) csak fordítás-ellenőrzés: a disztribúciós .NET SDK-kból gyakran hiányzik a
+       WindowsDesktop SDK, a WinForms referencia-csomag viszont NuGetről is megjön. Futtatni így nem lehet. -->
+  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InstallerBuilder.Core\InstallerBuilder.Core.csproj" />
+  </ItemGroup>
+
+</Project>

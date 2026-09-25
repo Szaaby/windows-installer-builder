@@ -1,0 +1,3 @@
+# A .cmd fájlok Windows-os sorvéggel maradjanak (a cmd.exe a csak LF-es fájlt néha rosszul olvassa).
+*.cmd text eol=crlf
+*.bat text eol=crlf
