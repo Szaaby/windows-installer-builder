@@ -48,8 +48,8 @@ public sealed class ProgramsPage : UserControl
         var down = Theme.Button("▼ Le");
         var remove = Theme.Button("Törlés");
         var verify = Theme.Button("Azonosítók ellenőrzése");
-        up.Click += (_, _) => Move(-1);
-        down.Click += (_, _) => Move(1);
+        up.Click += (_, _) => MoveSelected(-1);
+        down.Click += (_, _) => MoveSelected(1);
         remove.Click += (_, _) => RemoveSelected();
         verify.Click += async (_, _) => await VerifyIdsAsync(verify);
         buttons.Controls.AddRange(new Control[] { up, down, remove, verify });
@@ -275,7 +275,7 @@ public sealed class ProgramsPage : UserControl
 
     private int SelectedIndex => _grid.CurrentRow?.Index ?? -1;
 
-    private void Move(int delta)
+    private void MoveSelected(int delta)
     {
         var i = SelectedIndex;
         var j = i + delta;
